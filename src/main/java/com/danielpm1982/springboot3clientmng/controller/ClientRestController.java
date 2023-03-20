@@ -25,6 +25,55 @@ public class ClientRestController{
             return clientList;
         }
     }
+    @GetMapping({"/clients/{clientId}", "/clients/{clientId}/"})
+    private Client getClientById(@PathVariable("clientId") Long clientId){
+        Client client = clientRepositoryInterface.findClientById(clientId);
+        if(client==null){
+            throw new ClientNotFoundException("Client not found ! clientId="+clientId);
+        } else{
+            return client;
+        }
+    }
+    @PostMapping({"/clients", "/clients/"})
+    //@RequestBody set as "required = false" only to avoid default 500 exception and display the custom exception instead. A payload is required !
+    private ModelAndView addClient(@RequestBody(required = false) Client client){
+        if(client==null||client.getClientName().equals("")||client.getClientName()==null||
+                client.getClientEmail().equals("")||client.getClientEmail()==null||
+                client.getClientId()!=null){
+           throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
+                   "containing both clientName and clientEmail properties with non-empty values. The clientId property, " +
+                   "on the other hand, must not be sent, as its value is generated at the server side. Please, " +
+                   "send another request with the proper payload.");
+        } else{
+            clientRepositoryInterface.saveClient(client);
+            return new ModelAndView("redirect:/api/clients");
+        }
+    }
+    @DeleteMapping({"/clients/{clientId}", "/clients/{clientId}"})
+    private ModelAndView deleteClientById(@PathVariable("clientId") Long clientId){
+        Client client = clientRepositoryInterface.findClientById(clientId);
+        if(client==null){
+            throw new ClientNotFoundException("Client not found ! Cannot be deleted ! clientId="+clientId);
+        } else{
+            clientRepositoryInterface.deleteClientById(clientId);
+        throw new ClientSuccessException("Client deleted ! clientId="+clientId);
+        }
+    }
+    @PutMapping({"/clients/{clientId}", "/clients/{clientId}/"})
+    private Client updateClient(@PathVariable("clientId") Long clientId, @RequestBody(required = true) Client client){
+        if(clientRepositoryInterface.findClientById(clientId)==null){
+            throw new ClientNotFoundException("Client not found ! Cannot be updated ! clientId="+clientId);
+        }
+        if(client==null||client.getClientName().equals("")||client.getClientName()==null||
+                client.getClientEmail().equals("")||client.getClientEmail()==null||
+                client.getClientId()!=null){
+            throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
+                    "containing both clientName and clientEmail properties with non-empty values. The clientId property, " +
+                    "on the other hand, must not be sent, as its value is generated only once at the server side. " +
+                    "The clientId primary key (PK) cannot be updated ! Please, send another request with the proper payload.");
+        }
+        return clientRepositoryInterface.updateClient(clientRepositoryInterface.findClientById(clientId));
+    }
     @DeleteMapping({"/clients/delete-all", "/clients/delete-all/"})
     private ModelAndView deleteAllAndTruncateClients(){
         clientRepositoryInterface.deleteAllClients();
@@ -40,54 +89,5 @@ public class ClientRestController{
         clientRepositoryInterface.truncate();
         bootstrap.loadInitialSampleClients();
         return new ModelAndView("redirect:/api/clients");
-    }
-    @GetMapping({"/client/{clientId}", "/client/{clientId}/"})
-    private Client getClientById(@PathVariable("clientId") Long clientId){
-        Client client = clientRepositoryInterface.findClientById(clientId);
-        if(client==null){
-            throw new ClientNotFoundException("Client not found ! clientId="+clientId);
-        } else{
-            return client;
-        }
-    }
-    @PostMapping({"/client/add", "/client/add/"})
-    //@RequestBody set as "required = false" only to avoid default 500 exception and display the custom exception instead. A payload is required !
-    private ModelAndView addClient(@RequestBody(required = false) Client client){
-        if(client==null||client.getClientName().equals("")||client.getClientName()==null||
-                client.getClientEmail().equals("")||client.getClientEmail()==null||
-                client.getClientId()!=null){
-           throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
-                   "containing both clientName and clientEmail properties with non-empty values. The clientId property, " +
-                   "on the other hand, must not be sent, as its value is generated at the server side. Please, " +
-                   "send another request with the proper payload.");
-        } else{
-            clientRepositoryInterface.saveClient(client);
-            return new ModelAndView("redirect:/api/clients");
-        }
-    }
-    @DeleteMapping({"/client/{clientId}/delete", "/client/{clientId}/delete/"})
-    private ModelAndView deleteClientById(@PathVariable("clientId") Long clientId){
-        Client client = clientRepositoryInterface.findClientById(clientId);
-        if(client==null){
-            throw new ClientNotFoundException("Client not found ! Cannot be deleted ! clientId="+clientId);
-        } else{
-            clientRepositoryInterface.deleteClientById(clientId);
-        throw new ClientSuccessException("Client deleted ! clientId="+clientId);
-        }
-    }
-    @PutMapping({"/client/{clientId}/update", "/client/{clientId}/update/"})
-    private Client updateClient(@PathVariable("clientId") Long clientId, @RequestBody(required = true) Client client){
-        if(clientRepositoryInterface.findClientById(clientId)==null){
-            throw new ClientNotFoundException("Client not found ! Cannot be updated ! clientId="+clientId);
-        }
-        if(client==null||client.getClientName().equals("")||client.getClientName()==null||
-                client.getClientEmail().equals("")||client.getClientEmail()==null||
-                client.getClientId()!=null){
-            throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
-                    "containing both clientName and clientEmail properties with non-empty values. The clientId property, " +
-                    "on the other hand, must not be sent, as its value is generated only once at the server side. " +
-                    "The clientId primary key (PK) cannot be updated ! Please, send another request with the proper payload.");
-        }
-        return clientRepositoryInterface.updateClient(clientRepositoryInterface.findClientById(clientId));
     }
 }
