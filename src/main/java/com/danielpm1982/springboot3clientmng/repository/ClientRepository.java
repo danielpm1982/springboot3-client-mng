@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public class ClientRepository implements ClientRepositoryInterface{
-    EntityManager em;
+    private final EntityManager em;
     public ClientRepository(EntityManager entityManager) {
         this.em = entityManager;
     }
