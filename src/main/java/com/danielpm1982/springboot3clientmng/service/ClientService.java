@@ -13,7 +13,7 @@ public class ClientService implements ClientServiceInterface {
     }
     @Override
     public Client saveClient(Client client) {
-        return clientRepositoryInterface.saveOrUpdateClient(client);
+        return clientRepositoryInterface.saveClient(client);
     }
     @Override
     public List<Client> findAllClients() {
@@ -25,7 +25,7 @@ public class ClientService implements ClientServiceInterface {
     }
     @Override
     public Client updateClient(Client client) {
-        return clientRepositoryInterface.saveOrUpdateClient(client);
+        return clientRepositoryInterface.updateClient(client);
     }
     @Override
     public void deleteClientById(Long id) {

@@ -37,16 +37,31 @@ public class ClientRestController{
     }
     @PostMapping({"/clients", "/clients/"})
     //@RequestBody set as "required = false" only to avoid default 500 exception and display the custom exception instead. A payload is required !
-    private ModelAndView addClient(@RequestBody(required = false) Client client){
-        if(client==null||client.getClientName().equals("")||client.getClientName()==null||
-                client.getClientEmail().equals("")||client.getClientEmail()==null||
-                client.getClientId()!=null){
+    private ModelAndView addClient(@RequestBody(required = false) Client clientDTO){
+        if(clientDTO==null||clientDTO.getClientName()==null||clientDTO.getClientName().equals("")||
+                clientDTO.getClientEmail()==null||clientDTO.getClientEmail().equals("")||
+                clientDTO.getClientId()!=null){
            throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
                    "containing both clientName and clientEmail properties with non-empty values. The clientId property, " +
-                   "on the other hand, must not be sent, as its value is generated at the server side. Please, " +
+                   "on the other hand, must not be sent, as its value is generated once and only at the server side. Please, " +
                    "send another request with the proper payload.");
         } else{
-            clientServiceInterface.saveClient(client);
+            //The Client DTO argument here is a transient entity of Client, that will be persisted into the JPA Persistence Context,
+            //at the Repository (DAO), and its state (data) will be saved at the DB, returning the persistent entity.
+            //The Client instance initially works as a DTO, but, when persisted into the Persistence Context, it is turned into a
+            //real persistent entity, whose data is synchronized and flushed to the DB, and then this same persistent entity is
+            //returned. While being persisted, it is set the clientId automatically, according to the auto-generated PK at the DBMS.
+            //The clientId field initially must be null, and is automatically set only when the instance is turned into a persistent
+            //entity. After we have the persistent entity returned, we can then get its clientId value if needed (the same PK value at
+            //the DB).
+            //Although possible, we shouldn't use the JPA merge() method, instead of the persist() one, at the Repository implementation,
+            //to persist new transient entities. That violates completely the semantics of the JPA specifications for both methods.
+            //Some may achieve that by mimicking the transient as a detached entity (setting the same id of a pre-existing registry), and
+            //that would work, but, again, that breaks completely the purpose of such JPA methods. JPA merge() should only be used to merge
+            //persistent or detached entities, while transient new entities should only be persisted by using JPA persist().
+            //We decided to follow the specs here... both at the addClient() as at the updateClient() methods... as well as at the
+            //ClientRepository.
+            clientServiceInterface.saveClient(clientDTO);
             return new ModelAndView("redirect:/api/clients");
         }
     }
@@ -57,38 +72,40 @@ public class ClientRestController{
             throw new ClientNotFoundException("Client not found ! Cannot be deleted ! clientId="+clientId);
         } else{
             clientServiceInterface.deleteClientById(clientId);
-        throw new ClientSuccessException("Client deleted ! clientId="+clientId);
+            throw new ClientSuccessException("Client deleted ! clientId="+clientId);
         }
     }
     @PutMapping({"/clients/{clientId}", "/clients/{clientId}/"})
-    private Client updateClient(@PathVariable("clientId") Long clientId, @RequestBody(required = true) Client client){
-        if(clientServiceInterface.findClientById(clientId)==null){
+    private Client updateClient(@PathVariable("clientId") Long clientId, @RequestBody(required = true) Client clientDTO){
+        final Client managedClient = clientServiceInterface.findClientById(clientId);
+        if(managedClient==null){
             throw new ClientNotFoundException("Client not found ! Cannot be updated ! clientId="+clientId);
         }
-        if(client==null||client.getClientName().equals("")||client.getClientName()==null||
-                client.getClientEmail().equals("")||client.getClientEmail()==null||
-                client.getClientId()!=null){
+        if(clientDTO==null||clientDTO.getClientName()==null||clientDTO.getClientName().equals("")||
+                clientDTO.getClientEmail()==null||clientDTO.getClientEmail().equals("")||
+                clientDTO.getClientId()!=null){
             throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
                     "containing both clientName and clientEmail properties with non-empty values. The clientId property, " +
-                    "on the other hand, must not be sent, as its value is generated only once at the server side. " +
+                    "on the other hand, must not be sent, as its value is generated once and only at the server side. " +
                     "The clientId primary key (PK) cannot be updated ! Please, send another request with the proper payload.");
         }
-        //the clientId is received as a @PathVariable argument and not at the updating payload data.
-        //the clientId is a constant value (PK at the DB) that must be used to find the registry but can't be updated.
-        //the clientId, received as a @PathVariable argument, is here set to the Client DTO, that received the updating data
-        //from the payload (clientName and clientEmail).
-        client.setClientId(clientId);
-        //the Client DTO, then with all 3 fields values set, is sent to the persistence layer for updating the registry
-        //at the DB.
-        //the Client DTO used here must not be sent to the persistence layer without a valid and already existent clientId,
-        //otherwise it would be handled as a new registry being added and not as an existing registry being updated.
-        //At the ClientRepository, the saveOrUpdateClient() method is the same and takes that fact as a distinction: if the
-        //instance sent there has a null or non-existent clientId it'll be saved as a new registry, otherwise, if it has a
-        //valid and existing clientId it'll be updated.
-        //Therefore, this method must not only validade that the @PathVariable clientId is valid and exists at the DB,
-        //but also must set that clientId to the Client DTO, which is the instance that'll be sent to the persistence layer
-        //for updating the existing registry.
-        return clientServiceInterface.updateClient(client);
+        //The clientId is received as a @PathVariable argument and not as part of the updating payload data.
+        //The clientId is a constant value (PK at the DB) that must be used to find the registry but can't be updated.
+        //The clientId value, received as the @PathVariable argument, is used to fetch a managed Client instance -
+        //persistent entity - from the JPA persistence context (with values of the actual DB state). The managed Client instance
+        //is later set with the values from the Client DTO and next sent to be merged back with the persistence context, and then
+        //synchronized with the DB, updating the state of the respective DB registry with the data from the payload (clientName
+        //and clientEmail, but not the clientId). The returned Client instance is persistent entity (with values already updated)
+        //and not the Client DTO.
+        //It wouldn't be right to send the Client DTO to be merged, even after setting the right clientId at it, as it is a transient
+        //entity and not a persistent or true detached one (we could mimic it as detached though, but that would break the JPA specs).
+        //Therefore, we chose to use a true persistent entity - managedClient - in order to send it (along with the updating data) to
+        //be merged with the persistence context, instead of sending a mimicked (as "detached") Client DTO, directly.
+        managedClient.setClientName(clientDTO.getClientName());
+        managedClient.setClientEmail(clientDTO.getClientEmail());
+        Client mergedClient = clientServiceInterface.updateClient(managedClient);
+        System.out.println("persistedClient is: "+mergedClient);
+        return mergedClient;
     }
     @DeleteMapping({"/clients/delete-all", "/clients/delete-all/"})
     private ModelAndView deleteAllAndTruncateClients(){
