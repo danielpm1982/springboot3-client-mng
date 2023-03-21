@@ -13,8 +13,8 @@ public class ClientRepository implements ClientRepositoryInterface{
         this.em = entityManager;
     }
     @Transactional
-    public void saveClient(Client client) {
-        em.persist(client);
+    public Client saveOrUpdateClient(Client client) {
+        return em.merge(client);
     }
     @Override
     public List<Client> findAllClients() {
@@ -23,11 +23,6 @@ public class ClientRepository implements ClientRepositoryInterface{
     @Override
     public Client findClientById(Long id) {
         return em.find(Client.class,id);
-    }
-    @Transactional
-    @Override
-    public Client updateClient(Client client) {
-        return em.merge(client);
     }
     @Transactional
     @Override
