@@ -104,7 +104,6 @@ public class ClientRestController{
         managedClient.setClientName(clientDTO.getClientName());
         managedClient.setClientEmail(clientDTO.getClientEmail());
         Client mergedClient = clientServiceInterface.updateClient(managedClient);
-        System.out.println("persistedClient is: "+mergedClient);
         return mergedClient;
     }
     @DeleteMapping({"/clients/delete-all", "/clients/delete-all/"})
