@@ -106,19 +106,28 @@ public class ClientRestController{
         Client mergedClient = clientServiceInterface.updateClient(managedClient);
         return mergedClient;
     }
-    @DeleteMapping({"/clients/delete-all", "/clients/delete-all/"})
+    @DeleteMapping({"/clients/delete-all-no-truncate", "/clients/delete-all-no-truncate/"})
+    private ModelAndView deleteAllClients(){
+        clientServiceInterface.deleteAllClients();
+        if(!clientServiceInterface.findAllClients().isEmpty()){
+            throw new RuntimeException("Error deleting Clients !");
+        } else{
+            throw new ClientSuccessException("All Client registries deleted !");
+        }
+    }
+    @DeleteMapping({"/clients/delete-all-and-truncate", "/clients/delete-all-and-truncate/"})
     private ModelAndView deleteAllAndTruncateClients(){
         clientServiceInterface.deleteAllClients();
-        clientServiceInterface.truncate();
+        clientServiceInterface.truncateDBTable();
         if(!clientServiceInterface.findAllClients().isEmpty()){
             throw new RuntimeException("Error deleting and/or truncating Clients !");
         } else{
             throw new ClientSuccessException("All Client registries deleted and database truncated ! Client Id counting reset !");
         }
     }
-    @PutMapping({"/clients/reset-all", "/clients/reset-all/"})
+    @PutMapping({"/clients/reset-default", "/clients/reset-default/"})
     private ModelAndView resetAllAndTruncateClients(){
-        clientServiceInterface.truncate();
+        clientServiceInterface.truncateDBTable();
         bootstrap.loadInitialSampleClients();
         return new ModelAndView("redirect:/api/clients");
     }

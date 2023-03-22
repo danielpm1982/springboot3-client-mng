@@ -14,37 +14,37 @@ public class ClientRepository implements ClientRepositoryInterface{
     }
     @Transactional
     @Override
-    public Client saveClient(Client client) {
+    public Client save(Client client) {
         em.persist(client);
         em.flush();
         return client;
     }
     @Override
-    public List<Client> findAllClients() {
+    public List<Client> findAll() {
         return em.createQuery("from Client", Client.class).getResultList();
     }
     @Override
-    public Client findClientById(Long id) {
+    public Client findById(Long id) {
         return em.find(Client.class,id);
     }
     @Transactional
     @Override
-    public Client updateClient(Client client) {
+    public Client update(Client client) {
         return em.merge(client);
     }
     @Transactional
     @Override
-    public void deleteClientById(Long id) {
-        em.remove(this.findClientById(id));
+    public void deleteById(Long id) {
+        em.remove(this.findById(id));
     }
     @Transactional
     @Override
-    public void deleteAllClients() {
+    public void deleteAll() {
         em.createQuery("delete from Client").executeUpdate();
     }
     @Transactional
     @Override
-    public void truncate() {
+    public void truncateDBTable() {
         Query nativeQuery = em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE;" +
                 "TRUNCATE TABLE CLIENT RESTART IDENTITY;" +
                 "SET REFERENTIAL_INTEGRITY TRUE;");

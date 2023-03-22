@@ -13,30 +13,30 @@ public class ClientService implements ClientServiceInterface {
     }
     @Override
     public Client saveClient(Client client) {
-        return clientRepositoryInterface.saveClient(client);
+        return clientRepositoryInterface.save(client);
     }
     @Override
     public List<Client> findAllClients() {
-        return clientRepositoryInterface.findAllClients();
+        return clientRepositoryInterface.findAll();
     }
     @Override
     public Client findClientById(Long id) {
-        return clientRepositoryInterface.findClientById(id);
+        return clientRepositoryInterface.findById(id);
     }
     @Override
     public Client updateClient(Client client) {
-        return clientRepositoryInterface.updateClient(client);
+        return clientRepositoryInterface.update(client);
     }
     @Override
     public void deleteClientById(Long id) {
-        clientRepositoryInterface.deleteClientById(id);
+        clientRepositoryInterface.deleteById(id);
     }
     @Override
     public void deleteAllClients() {
-        clientRepositoryInterface.deleteAllClients();
+        clientRepositoryInterface.deleteAll();
     }
     @Override
-    public void truncate() {
-        clientRepositoryInterface.truncate();
+    public void truncateDBTable() {
+        clientRepositoryInterface.truncateDBTable();
     }
 }

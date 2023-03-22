@@ -72,6 +72,6 @@ public class Bootstrap {
         clientServiceInterface.findAllClients().forEach(x->logger.log(Level.INFO,x));
     }
     private void truncateClientTable(){
-        clientServiceInterface.truncate();
+        clientServiceInterface.truncateDBTable();
     }
 }

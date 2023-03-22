@@ -9,5 +9,5 @@ public interface ClientServiceInterface {
     public Client updateClient(Client client);
     public void deleteClientById(Long id);
     public void deleteAllClients();
-    public void truncate();
+    public void truncateDBTable();
 }
