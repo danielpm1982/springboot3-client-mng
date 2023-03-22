@@ -13,7 +13,10 @@ import java.util.List;
 public class ClientRestController{
     private final ClientServiceInterface clientServiceInterface;
     private final Bootstrap bootstrap;
-    public ClientRestController(@Qualifier("clientService") ClientServiceInterface clientServiceInterface, Bootstrap bootstrap) {
+//    private final String CLIENT_SERVICE_BEAN_ID = "clientServicePureJDBC";
+//    private final String CLIENT_SERVICE_BEAN_ID="clientServicePureJPA";
+        private final String CLIENT_SERVICE_BEAN_ID = "clientServiceSpringDataJPA";
+    public ClientRestController(@Qualifier(value=CLIENT_SERVICE_BEAN_ID) ClientServiceInterface clientServiceInterface, Bootstrap bootstrap) {
         this.clientServiceInterface = clientServiceInterface;
         this.bootstrap = bootstrap;
     }

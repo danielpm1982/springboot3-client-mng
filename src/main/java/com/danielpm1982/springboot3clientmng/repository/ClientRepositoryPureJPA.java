@@ -5,11 +5,12 @@ import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class ClientRepository implements ClientRepositoryInterface{
+public class ClientRepositoryPureJPA implements ClientRepositoryPureJPAInterface{
     private final EntityManager em;
-    public ClientRepository(EntityManager entityManager) {
+    public ClientRepositoryPureJPA(EntityManager entityManager) {
         this.em = entityManager;
     }
     @Transactional
@@ -24,8 +25,8 @@ public class ClientRepository implements ClientRepositoryInterface{
         return em.createQuery("from Client", Client.class).getResultList();
     }
     @Override
-    public Client findById(Long id) {
-        return em.find(Client.class,id);
+    public Optional<Client> findById(Long id) {
+        return Optional.of(em.find(Client.class,id));
     }
     @Transactional
     @Override
@@ -35,7 +36,7 @@ public class ClientRepository implements ClientRepositoryInterface{
     @Transactional
     @Override
     public void deleteById(Long id) {
-        em.remove(this.findById(id));
+        em.remove(em.find(Client.class,id));
     }
     @Transactional
     @Override

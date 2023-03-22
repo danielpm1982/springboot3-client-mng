@@ -4,6 +4,7 @@ import com.danielpm1982.springboot3clientmng.service.ClientServiceInterface;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
@@ -11,7 +12,7 @@ import java.util.Arrays;
 public class Bootstrap {
     private final ClientServiceInterface clientServiceInterface;
     private final Logger logger;
-    public Bootstrap(ClientServiceInterface clientServiceInterface) {
+    public Bootstrap(@Qualifier("clientServicePureJPA")ClientServiceInterface clientServiceInterface) {
         this.clientServiceInterface = clientServiceInterface;
         this.logger = LogManager.getLogger(Bootstrap.class);
     }
