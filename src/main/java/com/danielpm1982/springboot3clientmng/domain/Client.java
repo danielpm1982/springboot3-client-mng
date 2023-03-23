@@ -16,4 +16,7 @@ public class Client {
     private String clientName;
     @Column(name = "CLIENT_EMAIL")
     private String clientEmail;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "CLIENT_ADDRESS", nullable = true)
+    private Address clientAddress;
 }

@@ -1,5 +1,7 @@
 package com.danielpm1982.springboot3clientmng.service;
+import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.domain.Client;
+import com.danielpm1982.springboot3clientmng.repository.AddressRepositorySpringDataJPAInterface;
 import com.danielpm1982.springboot3clientmng.repository.ClientRepositorySpringDataJPAInterface;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.List;
 @Service
 public class ClientServiceSpringDataJPA implements ClientServiceInterface {
     private final ClientRepositorySpringDataJPAInterface clientRepositorySpringDataJPAInterface;
-    public ClientServiceSpringDataJPA(ClientRepositorySpringDataJPAInterface clientRepositorySpringDataJPAInterface) {
+    public ClientServiceSpringDataJPA(ClientRepositorySpringDataJPAInterface clientRepositorySpringDataJPAInterface, AddressRepositorySpringDataJPAInterface addressRepositorySpringDataJPAInterface) {
         this.clientRepositorySpringDataJPAInterface = clientRepositorySpringDataJPAInterface;
     }
     @Override
@@ -37,5 +39,9 @@ public class ClientServiceSpringDataJPA implements ClientServiceInterface {
     @Override
     public void truncateDBTable() {
         clientRepositorySpringDataJPAInterface.truncateDBTable();
+    }
+    public Client setAddressOnClient(Address address, Long clientId){
+        clientRepositorySpringDataJPAInterface.setAddressOnClient(address, clientId);
+        return clientRepositorySpringDataJPAInterface.findById(clientId).get();
     }
 }

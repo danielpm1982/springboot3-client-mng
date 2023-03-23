@@ -1,4 +1,5 @@
 package com.danielpm1982.springboot3clientmng.service;
+import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.domain.Client;
 import java.util.List;
 
@@ -10,4 +11,5 @@ public interface ClientServiceInterface {
     public void deleteClientById(Long id);
     public void deleteAllClients();
     public void truncateDBTable();
+    public Client setAddressOnClient(Address address, Long clientId);
 }

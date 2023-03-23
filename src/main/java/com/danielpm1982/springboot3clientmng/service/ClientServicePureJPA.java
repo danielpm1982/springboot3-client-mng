@@ -1,4 +1,5 @@
 package com.danielpm1982.springboot3clientmng.service;
+import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.domain.Client;
 import com.danielpm1982.springboot3clientmng.repository.ClientRepositoryPureJPAInterface;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,5 +39,10 @@ public class ClientServicePureJPA implements ClientServiceInterface {
     @Override
     public void truncateDBTable() {
         clientRepositoryPureJPAInterface.truncateDBTable();
+    }
+    @Override
+    public Client setAddressOnClient(Address address, Long clientId) {
+        clientRepositoryPureJPAInterface.setAddressOnClient(address, clientId);
+        return clientRepositoryPureJPAInterface.findById(clientId).get();
     }
 }
