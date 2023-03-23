@@ -18,7 +18,6 @@ public class ClientRestController{
     private final String CLIENT_SERVICE_BEAN_ID="clientServicePureJPA";
 //    private final String CLIENT_SERVICE_BEAN_ID = "clientServiceSpringDataJPA";
     private final String ADDRESS_SERVICE_BEAN_ID = "addressServiceSpringDataJPA";
-
     public ClientRestController(@Qualifier(value=CLIENT_SERVICE_BEAN_ID) ClientServiceInterface clientServiceInterface,
                                 @Qualifier(value=ADDRESS_SERVICE_BEAN_ID) AddressServiceInterface addressServiceInterface,
                                 Bootstrap bootstrap) {

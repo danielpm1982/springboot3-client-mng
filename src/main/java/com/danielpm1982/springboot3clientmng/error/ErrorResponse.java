@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import java.time.ZonedDateTime;
 
 @Data @NoArgsConstructor
-public class ClientErrorResponse {
+public class ErrorResponse {
     private ZonedDateTime timestamp;
     private int status;
     private String error;

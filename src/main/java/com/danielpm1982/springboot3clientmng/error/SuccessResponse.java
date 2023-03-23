@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import java.time.ZonedDateTime;
 
 @Data @NoArgsConstructor
-public class ClientSuccessResponse {
+public class SuccessResponse {
     private ZonedDateTime timestamp;
     private int status;
     private String message;
