@@ -1,5 +1,7 @@
 package com.danielpm1982.springboot3clientmng;
 import com.danielpm1982.springboot3clientmng.bootstrap.Bootstrap;
+import com.danielpm1982.springboot3clientmng.error.ErrorResponse;
+import com.danielpm1982.springboot3clientmng.error.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

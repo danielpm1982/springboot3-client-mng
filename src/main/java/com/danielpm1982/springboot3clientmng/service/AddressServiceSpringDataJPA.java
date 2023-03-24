@@ -20,7 +20,7 @@ public class AddressServiceSpringDataJPA implements AddressServiceInterface {
     }
     @Override
     public Address findAddressById(Long id) {
-        return addressRepositorySpringDataJPAInterface.findById(id).get();
+        return addressRepositorySpringDataJPAInterface.findById(id).orElse(null);
     }
     @Override
     public Address updateAddress(Address address) {

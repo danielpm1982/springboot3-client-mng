@@ -5,11 +5,18 @@ import java.util.List;
 
 public interface ClientServiceInterface {
     public Client saveClient(Client client);
+
     public List<Client> findAllClients();
+
     public Client findClientById(Long id);
+
     public Client updateClient(Client client);
+
     public void deleteClientById(Long id);
+
     public void deleteAllClients();
+
     public void truncateDBTable();
+
     public Client setAddressOnClient(Address address, Long clientId);
 }

@@ -22,7 +22,7 @@ public class ClientServicePureJPA implements ClientServiceInterface {
     }
     @Override
     public Client findClientById(Long id) {
-        return clientRepositoryPureJPAInterface.findById(id).get();
+        return clientRepositoryPureJPAInterface.findById(id).orElse(null);
     }
     @Override
     public Client updateClient(Client client) {

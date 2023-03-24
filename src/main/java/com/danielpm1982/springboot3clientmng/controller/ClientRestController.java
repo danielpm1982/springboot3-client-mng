@@ -1,5 +1,6 @@
 package com.danielpm1982.springboot3clientmng.controller;
 import com.danielpm1982.springboot3clientmng.bootstrap.Bootstrap;
+import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.domain.Client;
 import com.danielpm1982.springboot3clientmng.error.*;
 import com.danielpm1982.springboot3clientmng.service.AddressServiceInterface;
@@ -154,5 +155,40 @@ public class ClientRestController{
         addressServiceInterface.truncateDBTable();
         bootstrap.loadInitialSampleClients();
         return new ModelAndView("redirect:/api/clients");
+    }
+    //The endpoint below creates a new Address, based on the Address payload, and sets that as the Client address
+    //Either If the Client has a null or a non-null Address, he will have that field/property updated by the Address
+    //created with the payload data received here. A valid Address payload must be passed, as well as a valid clientId.
+    @PutMapping({"/clients/{clientId}/address", "/clients/{clientId}/address"})
+    private Client setAddressOnClient(@RequestBody(required = false) Address addressDTO, @PathVariable("clientId") Long clientId){
+        if(clientServiceInterface.findClientById(clientId)==null){
+            throw new ClientNotFoundException("Client not found ! Cannot add Address ! clientId="+clientId);
+        } else if(addressDTO==null||addressDTO.getAddressStreet()==null||addressDTO.getAddressStreet().equals("")||
+                addressDTO.getAddressNumber()<=0||addressDTO.getAddressCity()==null||addressDTO.getAddressCity().equals("")||
+                addressDTO.getAddressState()==null||addressDTO.getAddressState().equals("")||addressDTO.getAddressCountry()==null||
+                addressDTO.getAddressCountry().equals("")||addressDTO.getAddressZipCode()==null||addressDTO.getAddressCity().equals("")||
+                addressDTO.getAddressId()!=null){
+                throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
+                        "containing all Address properties except addressId, which is automatically generated at the server side. Please, " +
+                        "send another request with the proper payload. Address not set to Client !");
+        } else{
+            Address persistentAddress = addressServiceInterface.saveAddress(addressDTO);
+            return clientServiceInterface.setAddressOnClient(persistentAddress, clientId);
+        }
+    }
+    //The endpoint below finds an existing Address at the DB, taking the addressId as PK, and sets that as the Client address
+    //Either If the Client has a null or a non-null Address, he will have that field/property updated by the pre-existing
+    //Address found here. This endpoint does not accept Address data as a payload, only the addressId as a pathVariable.
+    //A valid clientId must be passed.
+    @PutMapping({"/clients/{clientId}/{addressId}", "/clients/{clientId}/{addressId}/"})
+    private Client setAddressOnClient(@PathVariable("addressId") Long addressId, @PathVariable("clientId") Long clientId){
+        Address persistentAddress = addressServiceInterface.findAddressById(addressId);
+        if(clientServiceInterface.findClientById(clientId)==null){
+            throw new ClientNotFoundException("Client not found ! Cannot be set Address ! clientId="+clientId);
+        } else if(persistentAddress==null){
+            throw new AddressNotFoundException("Address not found ! Cannot set on Client ! addressId="+addressId);
+        } else{
+            return clientServiceInterface.setAddressOnClient(persistentAddress, clientId);
+        }
     }
 }

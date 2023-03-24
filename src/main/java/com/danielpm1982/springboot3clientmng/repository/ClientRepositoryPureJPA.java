@@ -27,7 +27,7 @@ public class ClientRepositoryPureJPA implements ClientRepositoryPureJPAInterface
     }
     @Override
     public Optional<Client> findById(Long id) {
-        return Optional.of(em.find(Client.class,id));
+            return Optional.ofNullable(em.find(Client.class,id));
     }
     @Transactional
     @Override
