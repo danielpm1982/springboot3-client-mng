@@ -1,5 +1,4 @@
 package com.danielpm1982.springboot3clientmng.repository;
-import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.domain.Client;
 import java.util.List;
 import java.util.Optional;
@@ -12,5 +11,4 @@ public interface ClientRepositoryPureJPAInterface {
     public void deleteById(Long id);
     public void deleteAll();
     public void truncateDBTable();
-    public void setAddressOnClient(Address address, Long clientId);
 }

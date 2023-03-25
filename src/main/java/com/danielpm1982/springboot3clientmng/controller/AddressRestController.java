@@ -33,6 +33,11 @@ public class AddressRestController {
             return address;
         }
     }
+    //Although Address instances could be created and saved at the DB with no association with Clients, in order to avoid orphan Addresses -
+    //that are set not to be removed automatically - it's advisable to only add addresses along with the respective Client association,
+    //by using the endpoint: PUT /clients/{clientId}/addresses" or PUT "/clients/{clientId}/addresses/". Through that, not only the Address
+    //instances will be created and saved, but also they'll have, at once, the respective Client associated to them. There would be very
+    //few scenarios in which an Address should be saved without its relationship being set to a Client at the same request event.
     @PostMapping({"/addresses", "/addresses/"})
     //@RequestBody set as "required = false" only to avoid default 500 exception and display the custom exception instead. A payload is required !
     private ModelAndView addAddress(@RequestBody(required = false) Address addressDTO){
@@ -49,8 +54,10 @@ public class AddressRestController {
                 return new ModelAndView("redirect:/api/addresses");
         }
     }
-    @DeleteMapping({"/addresses/{addressId}", "/addresses/{addressId}"})
-    private ModelAndView deleteAdressById(@PathVariable("addressId") Long addressId){
+    //If any Client is already associated with the Address, and any property of Client is being mapped by any
+    //property of the Address, this Address instance won't be able to be deleted. Only if no relationships exist.
+    @DeleteMapping({"/addresses/{addressId}", "/addresses/{addressId}/"})
+    private void deleteAddressById(@PathVariable("addressId") Long addressId){
         Address address = addressServiceInterface.findAddressById(addressId);
         if(address==null){
             throw new AddressNotFoundException("Address not found ! Cannot be deleted ! addressId="+addressId);

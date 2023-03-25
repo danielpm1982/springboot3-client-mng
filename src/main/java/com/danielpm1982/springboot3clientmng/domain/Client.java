@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Table(name = "CLIENT")
 @Entity
@@ -16,7 +17,7 @@ public class Client {
     private String clientName;
     @Column(name = "CLIENT_EMAIL")
     private String clientEmail;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "CLIENT_ADDRESS", nullable = true)
-    private Address clientAddress;
+    @OneToMany(mappedBy = "addressClient", targetEntity = Address.class, fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL)
+    private List<Address> clientAddressList;
 }

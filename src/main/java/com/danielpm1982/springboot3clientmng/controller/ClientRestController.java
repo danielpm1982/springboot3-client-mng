@@ -54,7 +54,7 @@ public class ClientRestController{
                    "containing both clientName and clientEmail properties with non-empty values. The clientId property, " +
                    "on the other hand, must not be sent, as its value is generated once and only at the server side. Please, " +
                    "send another request with the proper payload.");
-        } else if(clientDTO.getClientAddress()!=null){
+        } else if(clientDTO.getClientAddressList()!=null&&!clientDTO.getClientAddressList().isEmpty()){
             throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
                     "and must not contain the clientAddress property. Please, send another request with the proper payload.");
         } else{
@@ -82,7 +82,7 @@ public class ClientRestController{
         }
     }
     @DeleteMapping({"/clients/{clientId}", "/clients/{clientId}"})
-    private ModelAndView deleteClientById(@PathVariable("clientId") Long clientId){
+    private void deleteClientById(@PathVariable("clientId") Long clientId){
         Client client = clientServiceInterface.findClientById(clientId);
         if(client==null){
             throw new ClientNotFoundException("Client not found ! Cannot be deleted ! clientId="+clientId);
@@ -104,7 +104,7 @@ public class ClientRestController{
                     "containing both clientName and clientEmail properties with non-empty values. The clientId property, " +
                     "on the other hand, must not be sent, as its value is generated once and only at the server side. " +
                     "The clientId primary key (PK) cannot be updated ! Please, send another request with the proper payload.");
-        } else if(clientDTO.getClientAddress()!=null){
+        } else if(clientDTO.getClientAddressList()!=null&&!clientDTO.getClientAddressList().isEmpty()){
             throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
                     "and must not contain the clientAddress property. Please, send another request with the proper payload.");
         } else {
@@ -128,9 +128,9 @@ public class ClientRestController{
         }
     }
     @DeleteMapping({"/clients/delete-all-no-truncate", "/clients/delete-all-no-truncate/"})
-    private ModelAndView deleteAllClients(){
-        clientServiceInterface.deleteAllClients();
+    private void deleteAllClients(){
         addressServiceInterface.deleteAllAddresses();
+        clientServiceInterface.deleteAllClients();
         if(!clientServiceInterface.findAllClients().isEmpty()){
             throw new RuntimeException("Error deleting Clients !");
         } else{
@@ -138,10 +138,10 @@ public class ClientRestController{
         }
     }
     @DeleteMapping({"/clients/delete-all-and-truncate", "/clients/delete-all-and-truncate/"})
-    private ModelAndView deleteAllAndTruncateClients(){
+    private void deleteAllAndTruncateClients(){
+        addressServiceInterface.deleteAllAddresses();
         clientServiceInterface.deleteAllClients();
         clientServiceInterface.truncateDBTable();
-        addressServiceInterface.deleteAllAddresses();
         addressServiceInterface.truncateDBTable();
         if(!clientServiceInterface.findAllClients().isEmpty()){
             throw new RuntimeException("Error deleting and/or truncating Clients !");
@@ -151,44 +151,34 @@ public class ClientRestController{
     }
     @PutMapping({"/clients/reset-default", "/clients/reset-default/"})
     private ModelAndView resetAllAndTruncateClients(){
-        clientServiceInterface.truncateDBTable();
         addressServiceInterface.truncateDBTable();
+        clientServiceInterface.truncateDBTable();
         bootstrap.loadInitialSampleClients();
         return new ModelAndView("redirect:/api/clients");
     }
-    //The endpoint below creates a new Address, based on the Address payload, and sets that as the Client address
-    //Either If the Client has a null or a non-null Address, he will have that field/property updated by the Address
-    //created with the payload data received here. A valid Address payload must be passed, as well as a valid clientId.
-    @PutMapping({"/clients/{clientId}/address", "/clients/{clientId}/address"})
-    private Client setAddressOnClient(@RequestBody(required = false) Address addressDTO, @PathVariable("clientId") Long clientId){
-        if(clientServiceInterface.findClientById(clientId)==null){
+    //The endpoint below creates a List of Addresses, based on the Address payload, sets the Client for each Address and saves them at the DB.
+    //Either If the Client has a null/empty or a non-null/non-empty Address list, he will have that field/property updated and mapped by from
+    //the updated addressClient field at each Address instance.
+    //A valid Address list payload must be passed, with at least one Address, as well as a valid clientId.
+    @PutMapping({"/clients/{clientId}/addresses", "/clients/{clientId}/addresses/"})
+    private ModelAndView setAddressListOnClient(@RequestBody(required = false) List<Address> addressListDTO, @PathVariable("clientId") Long clientId){
+        Client persistentClient = clientServiceInterface.findClientById(clientId);
+        if(persistentClient==null){
             throw new ClientNotFoundException("Client not found ! Cannot add Address ! clientId="+clientId);
-        } else if(addressDTO==null||addressDTO.getAddressStreet()==null||addressDTO.getAddressStreet().equals("")||
-                addressDTO.getAddressNumber()<=0||addressDTO.getAddressCity()==null||addressDTO.getAddressCity().equals("")||
-                addressDTO.getAddressState()==null||addressDTO.getAddressState().equals("")||addressDTO.getAddressCountry()==null||
-                addressDTO.getAddressCountry().equals("")||addressDTO.getAddressZipCode()==null||addressDTO.getAddressCity().equals("")||
-                addressDTO.getAddressId()!=null){
-                throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
-                        "containing all Address properties except addressId, which is automatically generated at the server side. Please, " +
-                        "send another request with the proper payload. Address not set to Client !");
+        } else if(addressListDTO==null||addressListDTO.isEmpty()||addressListDTO.get(0).getAddressStreet()==null||
+                addressListDTO.get(0).getAddressStreet().equals("")||addressListDTO.get(0).getAddressNumber()<=0||
+                addressListDTO.get(0).getAddressCity()==null||addressListDTO.get(0).getAddressCity().equals("")||
+                addressListDTO.get(0).getAddressState()==null||addressListDTO.get(0).getAddressState().equals("")||
+                addressListDTO.get(0).getAddressCountry()==null||addressListDTO.get(0).getAddressCountry().equals("")||
+                addressListDTO.get(0).getAddressZipCode()==null||addressListDTO.get(0).getAddressCity().equals("")||
+                addressListDTO.stream().anyMatch(x->x.getAddressId()!=null)){
+                    throw new InvalidPayloadException("Invalid payload data ! A valid JSON file must be sent, at the request body, " +
+                        "containing a list of Addresses, with at least one Address, as well as all Address properties, except addressId, " +
+                        "which is automatically generated at the server side. Please, send another request with the proper payload. " +
+                        "Address list not set to Client !");
         } else{
-            Address persistentAddress = addressServiceInterface.saveAddress(addressDTO);
-            return clientServiceInterface.setAddressOnClient(persistentAddress, clientId);
-        }
-    }
-    //The endpoint below finds an existing Address at the DB, taking the addressId as PK, and sets that as the Client address
-    //Either If the Client has a null or a non-null Address, he will have that field/property updated by the pre-existing
-    //Address found here. This endpoint does not accept Address data as a payload, only the addressId as a pathVariable.
-    //A valid clientId must be passed.
-    @PutMapping({"/clients/{clientId}/{addressId}", "/clients/{clientId}/{addressId}/"})
-    private Client setAddressOnClient(@PathVariable("addressId") Long addressId, @PathVariable("clientId") Long clientId){
-        Address persistentAddress = addressServiceInterface.findAddressById(addressId);
-        if(clientServiceInterface.findClientById(clientId)==null){
-            throw new ClientNotFoundException("Client not found ! Cannot be set Address ! clientId="+clientId);
-        } else if(persistentAddress==null){
-            throw new AddressNotFoundException("Address not found ! Cannot set on Client ! addressId="+addressId);
-        } else{
-            return clientServiceInterface.setAddressOnClient(persistentAddress, clientId);
+                addressServiceInterface.setClientOnAndSaveAddresses(persistentClient, addressListDTO);
+                return new ModelAndView("redirect:/api/clients/"+clientId);
         }
     }
 }

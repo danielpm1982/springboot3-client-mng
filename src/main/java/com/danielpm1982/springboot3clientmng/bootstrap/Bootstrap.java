@@ -17,7 +17,7 @@ public class Bootstrap {
     private final Logger logger;
     public Bootstrap(@Qualifier("clientServiceSpringDataJPA") ClientServiceInterface clientServiceInterface,
 //            @Qualifier("clientServicePureJPA") ClientServiceInterface clientServiceInterface,
-                     @Qualifier("addressServiceSpringDataJPA") AddressServiceInterface addressServiceInterface) {
+                     @Qualifier("addressServiceSpringDataJPA") AddressServiceInterface addressServiceInterface){
         this.clientServiceInterface = clientServiceInterface;
         this.addressServiceInterface = addressServiceInterface;
         this.logger = LogManager.getLogger(this.getClass());
@@ -51,12 +51,12 @@ public class Bootstrap {
         c1 = clientServiceInterface.saveClient(c1);
         c2 = clientServiceInterface.saveClient(c2);
         clientServiceInterface.saveClient(c3);
-        Address a1 = new Address(null, "street1", 100, "city1","state1","country1","60000-000");
-        a1 = addressServiceInterface.saveAddress(a1);
-        Address a2 = new Address(null, "street2", 100, "city2","state2","country2","90000-000");
+        Address a1 = new Address(null, "street1", 100, "city1","state1","country1","60000-000",null);
+        a1.setAddressClient(c1);
+        addressServiceInterface.saveAddress(a1);
+        Address a2 = new Address(null, "street2", 100, "city2","state2","country2","90000-000",null);
+        a2.setAddressClient(c2);
         a2 = addressServiceInterface.saveAddress(a2);
-        clientServiceInterface.setAddressOnClient(a1, c1.getClientId());
-        clientServiceInterface.setAddressOnClient(a2, c2.getClientId());
         logger.log(Level.INFO, "Saving Clients:");
         logger.log(Level.INFO, "Clients Saved !");
     }
@@ -81,13 +81,13 @@ public class Bootstrap {
     }
     private void testDeleteAllClients(){
         logger.log(Level.INFO, "Delete All Clients:");
-        clientServiceInterface.deleteAllClients();
-        clientServiceInterface.findAllClients().forEach(x->logger.log(Level.INFO,x));
         addressServiceInterface.deleteAllAddresses();
         addressServiceInterface.findAllAddresses().forEach(x->logger.log(Level.INFO,x));
+        clientServiceInterface.deleteAllClients();
+        clientServiceInterface.findAllClients().forEach(x->logger.log(Level.INFO,x));
     }
     private void truncateClientTable(){
-        clientServiceInterface.truncateDBTable();
         addressServiceInterface.truncateDBTable();
+        clientServiceInterface.truncateDBTable();
     }
 }

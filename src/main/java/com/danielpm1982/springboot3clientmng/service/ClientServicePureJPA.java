@@ -40,9 +40,4 @@ public class ClientServicePureJPA implements ClientServiceInterface {
     public void truncateDBTable() {
         clientRepositoryPureJPAInterface.truncateDBTable();
     }
-    @Override
-    public Client setAddressOnClient(Address address, Long clientId) {
-        clientRepositoryPureJPAInterface.setAddressOnClient(address, clientId);
-        return clientRepositoryPureJPAInterface.findById(clientId).get();
-    }
 }

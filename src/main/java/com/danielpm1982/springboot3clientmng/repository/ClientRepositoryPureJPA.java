@@ -1,5 +1,4 @@
 package com.danielpm1982.springboot3clientmng.repository;
-import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.domain.Client;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -51,11 +50,5 @@ public class ClientRepositoryPureJPA implements ClientRepositoryPureJPAInterface
                 "TRUNCATE TABLE CLIENT RESTART IDENTITY;" +
                 "SET REFERENTIAL_INTEGRITY TRUE;");
         nativeQuery.executeUpdate();
-    }
-    @Transactional
-    @Override
-    public void setAddressOnClient(Address address, Long clientId) {
-        Client client = findById(clientId).get();
-        client.setClientAddress(address);
     }
 }

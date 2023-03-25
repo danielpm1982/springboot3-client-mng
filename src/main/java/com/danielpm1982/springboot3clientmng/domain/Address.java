@@ -1,12 +1,14 @@
 package com.danielpm1982.springboot3clientmng.domain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "ADDRESS")
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor @ToString(exclude = {"addressClient"})
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +26,8 @@ public class Address {
     private String addressCountry;
     @Column(name = "ADDRESS_ZIP_CODE")
     private String addressZipCode;
+    @JsonIgnore
+    @ManyToOne(targetEntity = Client.class, fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "CLIENT_ID", nullable = true)
+    private Client addressClient;
 }

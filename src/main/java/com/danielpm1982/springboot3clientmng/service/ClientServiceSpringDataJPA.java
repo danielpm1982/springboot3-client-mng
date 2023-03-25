@@ -40,9 +40,4 @@ public class ClientServiceSpringDataJPA implements ClientServiceInterface {
     public void truncateDBTable() {
         clientRepositorySpringDataJPAInterface.truncateDBTable();
     }
-    @Override
-    public Client setAddressOnClient(Address address, Long clientId) {
-        clientRepositorySpringDataJPAInterface.setAddressOnClient(address, clientId);
-        return clientRepositorySpringDataJPAInterface.findById(clientId).get();
-    }
 }

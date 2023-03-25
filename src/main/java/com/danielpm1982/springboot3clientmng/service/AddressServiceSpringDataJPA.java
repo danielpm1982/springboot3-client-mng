@@ -1,14 +1,19 @@
 package com.danielpm1982.springboot3clientmng.service;
 import com.danielpm1982.springboot3clientmng.domain.Address;
+import com.danielpm1982.springboot3clientmng.domain.Client;
 import com.danielpm1982.springboot3clientmng.repository.AddressRepositorySpringDataJPAInterface;
+import com.danielpm1982.springboot3clientmng.repository.ClientRepositorySpringDataJPAInterface;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class AddressServiceSpringDataJPA implements AddressServiceInterface {
     private final AddressRepositorySpringDataJPAInterface addressRepositorySpringDataJPAInterface;
-    public AddressServiceSpringDataJPA(AddressRepositorySpringDataJPAInterface addressRepositorySpringDataJPAInterface) {
+    private final ClientRepositorySpringDataJPAInterface clientRepositorySpringDataJPAInterface;
+    public AddressServiceSpringDataJPA(AddressRepositorySpringDataJPAInterface addressRepositorySpringDataJPAInterface,
+                                       ClientRepositorySpringDataJPAInterface clientRepositorySpringDataJPAInterface) {
         this.addressRepositorySpringDataJPAInterface = addressRepositorySpringDataJPAInterface;
+        this.clientRepositorySpringDataJPAInterface=clientRepositorySpringDataJPAInterface;
     }
     @Override
     public Address saveAddress(Address address) {
@@ -37,5 +42,15 @@ public class AddressServiceSpringDataJPA implements AddressServiceInterface {
     @Override
     public void truncateDBTable() {
         addressRepositorySpringDataJPAInterface.truncateDBTable();
+    }
+    @Override
+    public void setClientOnAndSaveAddresses(Client persistentClient, List<Address> addressList) {
+        addressList.forEach(x->x.setAddressClient(persistentClient));
+        addressRepositorySpringDataJPAInterface.saveAllAndFlush(addressList);
+    }
+    @Override
+    public List<Address> findAddressesByClient(Long clientId) {
+        Client persistentClient = clientRepositorySpringDataJPAInterface.findById(clientId).get();
+        return addressRepositorySpringDataJPAInterface.findAddressesByClient(persistentClient);
     }
 }
