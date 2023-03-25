@@ -18,4 +18,8 @@ public interface AddressRepositorySpringDataJPAInterface extends JpaRepository<A
     public void truncateDBTable();
     @Query("select a from Address a where a.addressClient=:client")
     public List<Address> findAddressesByClient(Client client);
+    @Query("delete from Address a where a.addressId=:addressId")
+    @Modifying
+    @Transactional
+    public void deleteById(Long addressId);
 }

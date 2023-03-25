@@ -54,12 +54,10 @@ public class AddressRestController {
                 return new ModelAndView("redirect:/api/addresses");
         }
     }
-    //If any Client is already associated with the Address, and any property of Client is being mapped by any
-    //property of the Address, this Address instance won't be able to be deleted. Only if no relationships exist.
     @DeleteMapping({"/addresses/{addressId}", "/addresses/{addressId}/"})
     private void deleteAddressById(@PathVariable("addressId") Long addressId){
-        Address address = addressServiceInterface.findAddressById(addressId);
-        if(address==null){
+        Address persistentAddress = addressServiceInterface.findAddressById(addressId);
+        if(persistentAddress==null){
             throw new AddressNotFoundException("Address not found ! Cannot be deleted ! addressId="+addressId);
         } else{
             addressServiceInterface.deleteAddressById(addressId);
