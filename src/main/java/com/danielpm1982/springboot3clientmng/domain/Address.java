@@ -8,6 +8,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "ADDRESS")
+//toString() shouldn't consider the addressClient field in order to avoid infinite looping
 @Data @NoArgsConstructor @AllArgsConstructor @ToString(exclude = {"addressClient"})
 public class Address {
     @Id
@@ -26,7 +27,7 @@ public class Address {
     private String addressCountry;
     @Column(name = "ADDRESS_ZIP_CODE")
     private String addressZipCode;
-    @JsonIgnore
+    @JsonIgnore //this avoids infinite looping when generating the JSON responses
     @ManyToOne(targetEntity = Client.class, fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "CLIENT_ID", nullable = true)
     private Client addressClient;

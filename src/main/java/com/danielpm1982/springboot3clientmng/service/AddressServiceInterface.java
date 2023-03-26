@@ -12,5 +12,4 @@ public interface AddressServiceInterface {
     public void deleteAllAddresses();
     public void truncateDBTable();
     public void setClientOnAndSaveAddresses(Client persistentClient, List<Address> addressList);
-    public List<Address> findAddressesByClient(Long clientId);
 }

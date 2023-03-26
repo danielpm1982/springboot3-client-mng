@@ -48,9 +48,4 @@ public class AddressServiceSpringDataJPA implements AddressServiceInterface {
         addressList.forEach(x->x.setAddressClient(persistentClient));
         addressRepositorySpringDataJPAInterface.saveAllAndFlush(addressList);
     }
-    @Override
-    public List<Address> findAddressesByClient(Long clientId) {
-        Client persistentClient = clientRepositorySpringDataJPAInterface.findById(clientId).get();
-        return addressRepositorySpringDataJPAInterface.findAddressesByClient(persistentClient);
-    }
 }

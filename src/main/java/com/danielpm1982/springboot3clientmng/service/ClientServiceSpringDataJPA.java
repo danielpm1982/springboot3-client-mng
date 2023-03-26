@@ -1,5 +1,4 @@
 package com.danielpm1982.springboot3clientmng.service;
-import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.domain.Client;
 import com.danielpm1982.springboot3clientmng.repository.AddressRepositorySpringDataJPAInterface;
 import com.danielpm1982.springboot3clientmng.repository.ClientRepositorySpringDataJPAInterface;
