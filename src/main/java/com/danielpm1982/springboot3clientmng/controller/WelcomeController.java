@@ -8,7 +8,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/")
 public class WelcomeController{
-    @GetMapping({"", "home", "welcome"})
+    @GetMapping({"", "home", "home/", "welcome", "welcome/"})
     private ModelAndView welcome(){
         ModelAndView modalAndView = new ModelAndView("welcome");
         Map<String, String> modalMap = new HashMap<>();

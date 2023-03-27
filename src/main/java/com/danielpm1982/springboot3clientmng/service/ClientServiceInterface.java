@@ -6,6 +6,7 @@ public interface ClientServiceInterface {
     public Client saveClient(Client client);
     public List<Client> findAllClients();
     public Client findClientById(Long id);
+    public boolean existsClientById(Long id);
     public Client updateClient(Client client);
     public void deleteClientById(Long id);
     public void deleteAllClients();

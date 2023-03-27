@@ -7,6 +7,7 @@ public interface ClientRepositoryPureJPAInterface {
     public Client save(Client client);
     public List<Client> findAll();
     public Optional<Client> findById(Long id);
+    public boolean existsById(Long id);
     public Client update(Client client);
     public void deleteById(Long id);
     public void deleteAll();

@@ -24,6 +24,10 @@ public class ClientServiceSpringDataJPA implements ClientServiceInterface {
         return clientRepositorySpringDataJPAInterface.findById(id).get();
     }
     @Override
+    public boolean existsClientById(Long id) {
+        return clientRepositorySpringDataJPAInterface.existsById(id);
+    }
+    @Override
     public Client updateClient(Client client) {
         return clientRepositorySpringDataJPAInterface.save(client);
     }

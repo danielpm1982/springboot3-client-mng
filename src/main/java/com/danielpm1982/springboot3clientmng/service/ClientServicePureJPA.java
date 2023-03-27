@@ -24,6 +24,10 @@ public class ClientServicePureJPA implements ClientServiceInterface {
         return clientRepositoryPureJPAInterface.findById(id).orElse(null);
     }
     @Override
+    public boolean existsClientById(Long id) {
+        return clientRepositoryPureJPAInterface.existsById(id);
+    }
+    @Override
     public Client updateClient(Client client) {
         return clientRepositoryPureJPAInterface.update(client);
     }

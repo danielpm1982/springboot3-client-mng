@@ -28,6 +28,10 @@ public class ClientRepositoryPureJPA implements ClientRepositoryPureJPAInterface
     public Optional<Client> findById(Long id) {
             return Optional.ofNullable(em.find(Client.class,id));
     }
+    @Override
+    public boolean existsById(Long id) {
+        return em.contains(em.find(Client.class,id));
+    }
     @Transactional
     @Override
     public Client update(Client client) {
