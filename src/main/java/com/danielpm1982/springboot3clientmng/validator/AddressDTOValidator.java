@@ -1,7 +1,6 @@
 package com.danielpm1982.springboot3clientmng.validator;
 import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.error.InvalidPayloadException;
-
 import java.util.List;
 
 public class AddressDTOValidator {
