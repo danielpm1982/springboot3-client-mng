@@ -43,4 +43,12 @@ public class ClientServiceSpringDataJPA implements ClientServiceInterface {
     public void truncateDBTable() {
         clientRepositorySpringDataJPAInterface.truncateDBTable();
     }
+    @Override
+    public List<Client> findClientByClientEmailIgnoreCaseLikeOrderByClientNameAsc(String clientEmail){
+        return clientRepositorySpringDataJPAInterface.findByClientEmailIgnoreCaseLikeOrderByClientNameAsc("%"+clientEmail+"%");
+    }
+    @Override
+    public List<Client> findClientByClientNameIgnoreCaseLikeOrderByClientNameAsc(String clientName) {
+        return clientRepositorySpringDataJPAInterface.findByClientNameIgnoreCaseLikeOrderByClientNameAsc("%"+clientName+"%");
+    }
 }

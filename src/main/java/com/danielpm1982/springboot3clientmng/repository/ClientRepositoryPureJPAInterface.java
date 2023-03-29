@@ -12,4 +12,6 @@ public interface ClientRepositoryPureJPAInterface {
     public void deleteById(Long id);
     public void deleteAll();
     public void truncateDBTable();
+    public List<Client> findByClientEmailIgnoreCaseLikeOrderByClientNameAsc(String clientEmail);
+    public List<Client> findByClientNameIgnoreCaseLikeOrderByClientNameAsc(String clientName);
 }

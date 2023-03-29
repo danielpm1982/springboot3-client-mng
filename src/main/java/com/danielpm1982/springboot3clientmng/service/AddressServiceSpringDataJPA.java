@@ -2,18 +2,14 @@ package com.danielpm1982.springboot3clientmng.service;
 import com.danielpm1982.springboot3clientmng.domain.Address;
 import com.danielpm1982.springboot3clientmng.domain.Client;
 import com.danielpm1982.springboot3clientmng.repository.AddressRepositorySpringDataJPAInterface;
-import com.danielpm1982.springboot3clientmng.repository.ClientRepositorySpringDataJPAInterface;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class AddressServiceSpringDataJPA implements AddressServiceInterface {
     private final AddressRepositorySpringDataJPAInterface addressRepositorySpringDataJPAInterface;
-    private final ClientRepositorySpringDataJPAInterface clientRepositorySpringDataJPAInterface;
-    public AddressServiceSpringDataJPA(AddressRepositorySpringDataJPAInterface addressRepositorySpringDataJPAInterface,
-                                       ClientRepositorySpringDataJPAInterface clientRepositorySpringDataJPAInterface) {
+    public AddressServiceSpringDataJPA(AddressRepositorySpringDataJPAInterface addressRepositorySpringDataJPAInterface) {
         this.addressRepositorySpringDataJPAInterface = addressRepositorySpringDataJPAInterface;
-        this.clientRepositorySpringDataJPAInterface=clientRepositorySpringDataJPAInterface;
     }
     @Override
     public Address saveAddress(Address address) {

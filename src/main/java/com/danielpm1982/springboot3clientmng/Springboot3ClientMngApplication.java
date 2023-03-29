@@ -13,7 +13,6 @@ public class Springboot3ClientMngApplication {
 	public static void main(String[] args) {
 		applicationContext = SpringApplication.run(Springboot3ClientMngApplication.class, args);
 		init();
-
 	}
 	public static void init(){
 		bootstrap = (Bootstrap)applicationContext.getBean("bootstrap");

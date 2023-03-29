@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import java.util.List;
 
 public interface ClientRepositorySpringDataJPAInterface extends JpaRepository<Client,Long> {
     @Query("delete from Client")
@@ -14,4 +15,6 @@ public interface ClientRepositorySpringDataJPAInterface extends JpaRepository<Cl
     @Modifying
     @Transactional
     public void truncateDBTable();
+    public List<Client> findByClientEmailIgnoreCaseLikeOrderByClientNameAsc(String clientEmail);
+    public List<Client> findByClientNameIgnoreCaseLikeOrderByClientNameAsc(String clientName);
 }

@@ -11,4 +11,6 @@ public interface ClientServiceInterface {
     public void deleteClientById(Long id);
     public void deleteAllClients();
     public void truncateDBTable();
+    public List<Client> findClientByClientEmailIgnoreCaseLikeOrderByClientNameAsc(String clientEmail);
+    public List<Client> findClientByClientNameIgnoreCaseLikeOrderByClientNameAsc(String clientName);
 }

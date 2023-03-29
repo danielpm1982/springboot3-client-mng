@@ -43,4 +43,12 @@ public class ClientServicePureJPA implements ClientServiceInterface {
     public void truncateDBTable() {
         clientRepositoryPureJPAInterface.truncateDBTable();
     }
+    @Override
+    public List<Client> findClientByClientEmailIgnoreCaseLikeOrderByClientNameAsc(String clientEmail){
+        return clientRepositoryPureJPAInterface.findByClientEmailIgnoreCaseLikeOrderByClientNameAsc("%"+clientEmail+"%");
+    }
+    @Override
+    public List<Client> findClientByClientNameIgnoreCaseLikeOrderByClientNameAsc(String clientName) {
+        return clientRepositoryPureJPAInterface.findByClientNameIgnoreCaseLikeOrderByClientNameAsc("%"+clientName+"%");
+    }
 }

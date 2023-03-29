@@ -18,8 +18,8 @@ public class ClientRestController{
     private final ClientServiceInterface clientServiceInterface;
     private final AddressServiceInterface addressServiceInterface;
     private final Bootstrap bootstrap;
-    private final String CLIENT_SERVICE_BEAN_ID="clientServicePureJPA";
-//    private final String CLIENT_SERVICE_BEAN_ID = "clientServiceSpringDataJPA";
+//    private final String CLIENT_SERVICE_BEAN_ID="clientServicePureJPA";
+    private final String CLIENT_SERVICE_BEAN_ID = "clientServiceSpringDataJPA";
     private final String ADDRESS_SERVICE_BEAN_ID = "addressServiceSpringDataJPA";
     public ClientRestController(@Qualifier(value=CLIENT_SERVICE_BEAN_ID) ClientServiceInterface clientServiceInterface,
                                 @Qualifier(value=ADDRESS_SERVICE_BEAN_ID) AddressServiceInterface addressServiceInterface,
@@ -44,6 +44,24 @@ public class ClientRestController{
             throw new ClientNotFoundException("Client not found ! clientId="+clientId);
         } else{
             return client;
+        }
+    }
+    @GetMapping({"/clients/findByEmail", "/clients/findByEmail/"})
+    private List<Client> getClientByClientEmail(@RequestParam(value = "clientEmail", required = true) String clientEmail){
+        List<Client> clientList = clientServiceInterface.findClientByClientEmailIgnoreCaseLikeOrderByClientNameAsc(clientEmail);
+        if(clientList.isEmpty()){
+            throw new ClientNotFoundException("No Client found ! clientEmail="+clientEmail);
+        } else{
+            return clientList;
+        }
+    }
+    @GetMapping({"/clients/findByName", "/clients/findByName/"})
+    private List<Client> getClientByClientName(@RequestParam(value = "clientName", required = true) String clientName){
+        List<Client> clientList = clientServiceInterface.findClientByClientNameIgnoreCaseLikeOrderByClientNameAsc(clientName);
+        if(clientList.isEmpty()){
+            throw new ClientNotFoundException("No Client found ! clientName="+clientName);
+        } else{
+            return clientList;
         }
     }
     @PostMapping({"/clients", "/clients/"})
