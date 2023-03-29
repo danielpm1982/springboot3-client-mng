@@ -24,4 +24,5 @@ public interface AddressRepositorySpringDataJPAInterface extends JpaRepository<A
     public void deleteById(Long addressId);
     public List<Address> findByAddressNumberEqualsAndAddressStreetLikeAndAddressCityLikeAllIgnoreCaseOrderByAddressIdAsc(Integer addressNumber, String addressStreet, String addressCity);
     public List<Address> findByAddressCityLikeOrAddressStateLikeAllIgnoreCaseOrderByAddressIdAsc(String addressCity, String addressState);
+    public List<Address> findByAddressClientClientIdEquals(Long clientId);
 }

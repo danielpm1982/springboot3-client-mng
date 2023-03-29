@@ -64,6 +64,14 @@ public class ClientRestController{
             return clientList;
         }
     }
+    @GetMapping({"/clients/{clientId}/addresses", "/clients/{clientId}/addresses/"})
+    private List<Address> getAddressListFromClient(@PathVariable("clientId") Long clientId){
+        final Client persistentClient = clientServiceInterface.findClientById(clientId);
+        if(persistentClient==null){
+            throw new ClientNotFoundException("Client not found ! Cannot get Addresses ! clientId="+clientId);
+        }
+        return persistentClient.getClientAddressList();
+    }
     @PostMapping({"/clients", "/clients/"})
     //@RequestBody set as "required = false" only to avoid default 500 exception and display the custom exception instead. A payload is required !
     private ModelAndView addClient(@RequestBody(required = false) Client clientDTO){

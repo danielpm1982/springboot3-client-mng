@@ -24,4 +24,5 @@ public interface AddressServiceInterface {
                                                                                                                                 String addressStreet,
                                                                                                                                 String addressCity);
     public List<Address> findAddressByAddressCityLikeOrAddressStateLikeAllIgnoreCaseOrderByAddressIdAsc(String addressCity, String addressState);
+    public List<Address> findAddressesByAddressClientClientIdEquals(Long clientId);
 }

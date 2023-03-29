@@ -34,6 +34,15 @@ public class AddressRestController {
             return address;
         }
     }
+    @GetMapping({"/addresses/findByClientId", "/addresses/findByClientId/"})
+    private List<Address> getAddressesByAddressClientClientId(@RequestParam(value = "clientId", required = true) Long clientId){
+        final List<Address> addressList = addressServiceInterface.findAddressesByAddressClientClientIdEquals(clientId);
+        if(addressList.isEmpty()){
+            throw new AddressNotFoundException("No Addresses found ! clientId="+clientId);
+        } else{
+            return addressList;
+        }
+    }
     @GetMapping({"/addresses/findByNumberAndStreetAndCity", "/addresses/findByNumberAndStreetAndCity/"})
     private List<Address> getAddressByAddressNumberAndAddressStreetAndAddressCity(@RequestParam(value = "addressNumber", required = false) Integer addressNumber,
                                                                             @RequestParam(value = "addressStreet", required = false) String addressStreet,

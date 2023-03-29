@@ -53,4 +53,7 @@ public class AddressServiceSpringDataJPA implements AddressServiceInterface {
     public List<Address> findAddressByAddressCityLikeOrAddressStateLikeAllIgnoreCaseOrderByAddressIdAsc(String addressCity, String addressState) {
         return addressRepositorySpringDataJPAInterface.findByAddressCityLikeOrAddressStateLikeAllIgnoreCaseOrderByAddressIdAsc("%"+addressCity+"%","%"+addressState+"%");
     }
+    public List<Address> findAddressesByAddressClientClientIdEquals(Long clientId){
+        return addressRepositorySpringDataJPAInterface.findByAddressClientClientIdEquals(clientId);
+    }
 }
