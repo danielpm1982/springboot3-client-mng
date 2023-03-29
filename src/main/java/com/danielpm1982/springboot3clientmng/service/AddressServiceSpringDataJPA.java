@@ -44,4 +44,13 @@ public class AddressServiceSpringDataJPA implements AddressServiceInterface {
         addressList.forEach(x->x.setAddressClient(persistentClient));
         addressRepositorySpringDataJPAInterface.saveAllAndFlush(addressList);
     }
+    public List<Address> findAddressByAddressNumberEqualsAndAddressStreetLikeAndAddressCityLikeAllIgnoreCaseOrderByAddressIdAsc(Integer addressNumber,
+                                                                                            String addressStreet,
+                                                                                            String addressCity){
+        return addressRepositorySpringDataJPAInterface.findByAddressNumberEqualsAndAddressStreetLikeAndAddressCityLikeAllIgnoreCaseOrderByAddressIdAsc(
+                addressNumber,"%"+addressStreet+"%","%"+addressCity+"%");
+    }
+    public List<Address> findAddressByAddressCityLikeOrAddressStateLikeAllIgnoreCaseOrderByAddressIdAsc(String addressCity, String addressState) {
+        return addressRepositorySpringDataJPAInterface.findByAddressCityLikeOrAddressStateLikeAllIgnoreCaseOrderByAddressIdAsc("%"+addressCity+"%","%"+addressState+"%");
+    }
 }

@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import java.util.List;
 
 public interface AddressRepositorySpringDataJPAInterface extends JpaRepository<Address,Long> {
     @Query("delete from Address")
@@ -21,4 +22,6 @@ public interface AddressRepositorySpringDataJPAInterface extends JpaRepository<A
     @Modifying
     @Transactional
     public void deleteById(Long addressId);
+    public List<Address> findByAddressNumberEqualsAndAddressStreetLikeAndAddressCityLikeAllIgnoreCaseOrderByAddressIdAsc(Integer addressNumber, String addressStreet, String addressCity);
+    public List<Address> findByAddressCityLikeOrAddressStateLikeAllIgnoreCaseOrderByAddressIdAsc(String addressCity, String addressState);
 }

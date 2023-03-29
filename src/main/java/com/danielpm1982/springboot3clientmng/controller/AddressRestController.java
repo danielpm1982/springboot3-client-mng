@@ -34,6 +34,27 @@ public class AddressRestController {
             return address;
         }
     }
+    @GetMapping({"/addresses/findByNumberAndStreetAndCity", "/addresses/findByNumberAndStreetAndCity/"})
+    private List<Address> getAddressByAddressNumberAndAddressStreetAndAddressCity(@RequestParam(value = "addressNumber", required = false) Integer addressNumber,
+                                                                            @RequestParam(value = "addressStreet", required = false) String addressStreet,
+                                                                            @RequestParam(value = "addressCity", required = false) String addressCity){
+        List<Address> addressList = addressServiceInterface.findAddressByAddressNumberEqualsAndAddressStreetLikeAndAddressCityLikeAllIgnoreCaseOrderByAddressIdAsc(addressNumber,addressStreet,addressCity);
+        if(addressList.isEmpty()){
+            throw new AddressNotFoundException("No Address found ! addressNumber="+addressNumber+" addressStreet="+addressStreet+" addressCity: "+addressCity);
+        } else{
+            return addressList;
+        }
+    }
+    @GetMapping({"/addresses/findByCityOrState", "/addresses/findByCityOrState/"})
+    private List<Address> getAddressByAddressCityOrAddressState(@RequestParam(value = "addressCity", required = false) String addressCity,
+                                                                @RequestParam(value = "addressState", required = false) String addressState){
+        List<Address> addressList = addressServiceInterface.findAddressByAddressCityLikeOrAddressStateLikeAllIgnoreCaseOrderByAddressIdAsc(addressCity,addressState);
+        if(addressList.isEmpty()){
+            throw new AddressNotFoundException("No Address found ! addressCity="+addressCity+" addressState="+addressState);
+        } else{
+            return addressList;
+        }
+    }
     //Although Address instances could be created and saved at the DB with no association with Clients, in order to avoid orphan Addresses -
     //that are set not to be removed automatically - it's advisable to only add addresses along with the respective Client association,
     //by using the endpoint: PUT /clients/{clientId}/addresses" or PUT "/clients/{clientId}/addresses/". Through that, not only the Address
