@@ -4,6 +4,7 @@ import com.danielpm1982.springboot3clientmng.domain.Client;
 import com.danielpm1982.springboot3clientmng.repository.AddressRepositorySpringDataJPAInterface;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AddressServiceSpringDataJPA implements AddressServiceInterface {
@@ -20,8 +21,8 @@ public class AddressServiceSpringDataJPA implements AddressServiceInterface {
         return addressRepositorySpringDataJPAInterface.findAll();
     }
     @Override
-    public Address findAddressById(Long id) {
-        return addressRepositorySpringDataJPAInterface.findById(id).orElse(null);
+    public Optional<Address> findAddressById(Long id) {
+        return addressRepositorySpringDataJPAInterface.findById(id);
     }
     @Override
     public Address updateAddress(Address address) {

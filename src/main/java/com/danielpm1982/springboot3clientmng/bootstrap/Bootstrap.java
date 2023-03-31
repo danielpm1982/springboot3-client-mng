@@ -66,11 +66,11 @@ public class Bootstrap {
     }
     private void testGetSingleClient(){
         logger.log(Level.INFO, "Finding Client Id=1");
-        logger.log(Level.INFO,clientServiceInterface.findClientById(1L));
+        logger.log(Level.INFO,clientServiceInterface.findClientById(1L).get());
     }
     private void testUpdateSingleClient(){
         logger.log(Level.INFO, "Updating Client Id=1 with name \"updated\" at the end:");
-        Client c1 = clientServiceInterface.findClientById(1L);
+        Client c1 = clientServiceInterface.findClientById(1L).get();
         c1.setClientName(c1.getClientName()+"-updated");
         logger.log(Level.INFO,clientServiceInterface.updateClient(c1));
     }

@@ -4,6 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +27,35 @@ public class ClientRepositoryPureJPA implements ClientRepositoryPureJPAInterface
     @Override
     public List<Client> findAll() {
         return em.createQuery("from Client", Client.class).getResultList();
+    }
+    public Page<Client> findAll(Pageable pageable){
+        final TypedQuery<Client> typedQuery;
+        String propertyToOrderBy = pageable.getSort().get().findFirst().get().getProperty();
+        String directionToOrderBy = pageable.getSort().get().findFirst().get().getDirection().toString();
+        switch (propertyToOrderBy){
+            case "clientName":
+                if(directionToOrderBy.equals("DESC")){
+                    typedQuery = em.createQuery("from Client c order by c.clientName desc", Client.class);
+                } else{
+                    typedQuery = em.createQuery("from Client c order by c.clientName asc", Client.class);
+                }
+                break;
+            case "clientEmail":
+                if(directionToOrderBy.equals("DESC")){
+                    typedQuery = em.createQuery("from Client c order by c.clientEmail desc", Client.class);
+                } else{
+                    typedQuery = em.createQuery("from Client c order by c.clientEmail asc", Client.class);
+                }
+                break;
+            default:
+                typedQuery = em.createQuery("from Client c order by c.clientId asc", Client.class);
+        }
+        typedQuery.setFirstResult(pageable.getPageNumber()*pageable.getPageSize());
+        typedQuery.setMaxResults(pageable.getPageSize());
+        List<Client> clientListAtPage = typedQuery.getResultList();
+        Query totalClientCountQuery = em.createQuery("select count(c.id) from Client c");
+        final long totalClientCount = (long)totalClientCountQuery.getSingleResult();
+        return new PageImpl<>(clientListAtPage, pageable, totalClientCount);
     }
     @Override
     public Optional<Client> findById(Long id) {

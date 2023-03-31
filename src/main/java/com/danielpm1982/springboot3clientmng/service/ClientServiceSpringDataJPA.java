@@ -2,8 +2,13 @@ package com.danielpm1982.springboot3clientmng.service;
 import com.danielpm1982.springboot3clientmng.domain.Client;
 import com.danielpm1982.springboot3clientmng.repository.AddressRepositorySpringDataJPAInterface;
 import com.danielpm1982.springboot3clientmng.repository.ClientRepositorySpringDataJPAInterface;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClientServiceSpringDataJPA implements ClientServiceInterface {
@@ -20,8 +25,15 @@ public class ClientServiceSpringDataJPA implements ClientServiceInterface {
         return clientRepositorySpringDataJPAInterface.findAll();
     }
     @Override
-    public Client findClientById(Long id) {
-        return clientRepositorySpringDataJPAInterface.findById(id).get();
+    public Page<Client> findAllClientsPagedAndOrderedAscBy(Integer pageNumber, Integer pageSize, String propertyToOrderBy){
+        //pagNumber must be decremented as at SpringDataJPA it is implemented starting from 0, while the user would
+        //start from 1, when asking for the first page
+        Pageable pageable = PageRequest.of(--pageNumber, pageSize, Sort.by(propertyToOrderBy).ascending());
+        return clientRepositorySpringDataJPAInterface.findAll(pageable);
+    }
+    @Override
+    public Optional<Client> findClientById(Long id) {
+        return clientRepositorySpringDataJPAInterface.findById(id);
     }
     @Override
     public boolean existsClientById(Long id) {

@@ -8,6 +8,7 @@ import com.danielpm1982.springboot3clientmng.service.ClientServiceInterface;
 import com.danielpm1982.springboot3clientmng.validator.AddressDTOValidator;
 import com.danielpm1982.springboot3clientmng.validator.ClientDTOValidator;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
@@ -39,11 +40,26 @@ public class ClientRestController{
     }
     @GetMapping({"/clients/{clientId}", "/clients/{clientId}/"})
     private Client getClientById(@PathVariable("clientId") Long clientId){
-        final Client client = clientServiceInterface.findClientById(clientId);
-        if(client==null){
-            throw new ClientNotFoundException("Client not found ! clientId="+clientId);
+//        final Client client = clientServiceInterface.findClientById(clientId).get();
+//        if(client==null){
+//            throw new ClientNotFoundException("Client not found ! clientId="+clientId);
+//        } else{
+//            return client;
+//        }
+        return clientServiceInterface.findClientById(clientId).orElseThrow(()->new ClientNotFoundException("Client not found ! clientId="+clientId));
+    }
+    @GetMapping({"/clients/pageableAndOrderableAscBy", "/pageableAndOrderableAscBy/"})
+    private List<Client> getAllClientsPagedAndOrderedBy(@RequestParam(value = "pageNumber", required = true) Integer pageNumber,
+                                                        @RequestParam(value = "pageSize", required = true) Integer pageSize,
+                                                        @RequestParam(value = "propertyToOrderBy", required = true) String propertyToOrderBy){
+        Page<Client> clientPage = clientServiceInterface.findAllClientsPagedAndOrderedAscBy(pageNumber, pageSize, propertyToOrderBy);
+        List<Client> clientListForPage = clientPage.getContent();
+        if(clientListForPage.isEmpty()){
+            throw new ClientNotFoundException("No Clients found for this Page ! actualPageNumber="+
+                    (clientPage.getNumber()+1)+" totalPages="+clientPage.getTotalPages()+" actualPageElements="+clientPage.getNumberOfElements()+
+                    " totalElements="+clientPage.getTotalElements()+" elementsPerPage="+clientPage.getSize()+" propertyToOrderBy="+propertyToOrderBy);
         } else{
-            return client;
+            return clientListForPage;
         }
     }
     @GetMapping({"/clients/findByEmail", "/clients/findByEmail/"})
@@ -66,10 +82,8 @@ public class ClientRestController{
     }
     @GetMapping({"/clients/{clientId}/addresses", "/clients/{clientId}/addresses/"})
     private List<Address> getAddressListFromClient(@PathVariable("clientId") Long clientId){
-        final Client persistentClient = clientServiceInterface.findClientById(clientId);
-        if(persistentClient==null){
-            throw new ClientNotFoundException("Client not found ! Cannot get Addresses ! clientId="+clientId);
-        }
+        final Client persistentClient = clientServiceInterface.findClientById(clientId).
+                orElseThrow(()->new ClientNotFoundException("Client not found ! Cannot get Addresses ! clientId="+clientId));
         return persistentClient.getClientAddressList();
     }
     @PostMapping({"/clients", "/clients/"})
@@ -111,10 +125,8 @@ public class ClientRestController{
     @PutMapping({"/clients/{clientId}", "/clients/{clientId}/"})
     //@RequestBody set as "required = false" only to avoid default 500 exception and display the custom exception instead. A payload is required !
     private Client updateClient(@PathVariable("clientId") Long clientId, @RequestBody(required = false) Client clientDTO){
-        final Client persistentClient = clientServiceInterface.findClientById(clientId);
-        if(persistentClient==null){
-            throw new ClientNotFoundException("Client not found ! Cannot be updated ! clientId="+clientId);
-        }
+        final Client persistentClient = clientServiceInterface.findClientById(clientId).
+                orElseThrow(()->new ClientNotFoundException("Client not found ! Cannot be updated ! clientId="+clientId));
         ClientDTOValidator.validateClientDTOForUpdatingClient(clientDTO);
         persistentClient.setClientName(clientDTO.getClientName());
         persistentClient.setClientEmail(clientDTO.getClientEmail());
@@ -169,10 +181,8 @@ public class ClientRestController{
     //@RequestBody set as "required = false" only to avoid default 500 exception and display the custom exception instead. A payload is required !
     @PutMapping({"/clients/{clientId}/addresses", "/clients/{clientId}/addresses/"})
     private ModelAndView setAddressListOnClient(@PathVariable("clientId") Long clientId, @RequestBody(required = false) List<Address> addressListDTO){
-        final Client persistentClient = clientServiceInterface.findClientById(clientId);
-        if(persistentClient==null){
-            throw new ClientNotFoundException("Client not found ! Cannot add Address ! clientId="+clientId);
-        }
+        final Client persistentClient = clientServiceInterface.findClientById(clientId).
+                orElseThrow(()->new ClientNotFoundException("Client not found ! Cannot add Address ! clientId="+clientId));
         AddressDTOValidator.validateAddressListDTOForSettingAddressListOnClient(addressListDTO);
         addressServiceInterface.setClientOnAndSaveAddresses(persistentClient, addressListDTO);
         return new ModelAndView("redirect:/api/clients/"+clientId);

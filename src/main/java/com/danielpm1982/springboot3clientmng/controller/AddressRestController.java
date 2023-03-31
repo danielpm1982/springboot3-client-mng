@@ -27,12 +27,8 @@ public class AddressRestController {
     }
     @GetMapping({"/addresses/{addressId}", "/addresses/{addressId}/"})
     private Address getAddressById(@PathVariable("addressId") Long addressId){
-        final Address address = addressServiceInterface.findAddressById(addressId);
-        if(address==null){
-            throw new AddressNotFoundException("Address not found ! addressId="+addressId);
-        } else{
-            return address;
-        }
+        return addressServiceInterface.findAddressById(addressId).
+                orElseThrow(()->new AddressNotFoundException("Address not found ! addressId="+addressId));
     }
     @GetMapping({"/addresses/findByClientId", "/addresses/findByClientId/"})
     private List<Address> getAddressesByAddressClientClientId(@RequestParam(value = "clientId", required = true) Long clientId){
@@ -47,7 +43,8 @@ public class AddressRestController {
     private List<Address> getAddressByAddressNumberAndAddressStreetAndAddressCity(@RequestParam(value = "addressNumber", required = false) Integer addressNumber,
                                                                             @RequestParam(value = "addressStreet", required = false) String addressStreet,
                                                                             @RequestParam(value = "addressCity", required = false) String addressCity){
-        List<Address> addressList = addressServiceInterface.findAddressByAddressNumberEqualsAndAddressStreetLikeAndAddressCityLikeAllIgnoreCaseOrderByAddressIdAsc(addressNumber,addressStreet,addressCity);
+        List<Address> addressList = addressServiceInterface.
+                findAddressByAddressNumberEqualsAndAddressStreetLikeAndAddressCityLikeAllIgnoreCaseOrderByAddressIdAsc(addressNumber,addressStreet,addressCity);
         if(addressList.isEmpty()){
             throw new AddressNotFoundException("No Address found ! addressNumber="+addressNumber+" addressStreet="+addressStreet+" addressCity: "+addressCity);
         } else{
@@ -79,21 +76,16 @@ public class AddressRestController {
     }
     @DeleteMapping({"/addresses/{addressId}", "/addresses/{addressId}/"})
     private void deleteAddressById(@PathVariable("addressId") Long addressId){
-        final Address persistentAddress = addressServiceInterface.findAddressById(addressId);
-        if(persistentAddress==null){
-            throw new AddressNotFoundException("Address not found ! Cannot be deleted ! addressId="+addressId);
-        } else{
-            addressServiceInterface.deleteAddressById(addressId);
-            throw new AddressSuccessException("Address deleted ! addressId="+addressId);
-        }
+        addressServiceInterface.findAddressById(addressId).
+                orElseThrow(()->new AddressNotFoundException("Address not found ! Cannot be deleted ! addressId="+addressId));
+        addressServiceInterface.deleteAddressById(addressId);
+        throw new AddressSuccessException("Address deleted ! addressId="+addressId);
     }
     //@RequestBody set as "required = false" only to avoid default 500 exception and display the custom exception instead. A payload is required !
     @PutMapping({"/addresses/{addressId}", "/addresses/{addressId}/"})
     private Address updateAddress(@PathVariable("addressId") Long addressId, @RequestBody(required = false) Address addressDTO){
-        final Address persistentAddress = addressServiceInterface.findAddressById(addressId);
-        if(persistentAddress==null){
-            throw new AddressNotFoundException("Address not found ! Cannot be updated ! addressId="+addressId);
-        }
+        final Address persistentAddress = addressServiceInterface.findAddressById(addressId).
+                orElseThrow(()->new AddressNotFoundException("Address not found ! Cannot be updated ! addressId="+addressId));
         AddressDTOValidator.validateAddressDTOForUpdatingAddress(addressDTO);
         persistentAddress.setAddressStreet(addressDTO.getAddressStreet());
         persistentAddress.setAddressNumber(addressDTO.getAddressNumber());
