@@ -14,7 +14,7 @@
 	<name>springboot3-client-mng</name>
 	<description>This is a very simple CRM Client Manager App created with Spring Boot 3</description>
 	<properties>
-		<java.version>19</java.version>
+		<java.version>20</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
